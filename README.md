@@ -39,6 +39,24 @@ The default static high-risk rules escalate pull requests that change:
 
 Tune `scripts/classify-risk.sh` to match your own architecture once real project folders exist.
 
+## Demo the workflow
+
+If your goal is to understand the workflow, test it with pull requests against the sample app:
+
+- Low-risk PR example: change `src/Sample.Api/WeatherForecast.cs`
+- High-risk PR example: change `src/Sample.Api/Auth/DemoTokenService.cs`
+- High-risk PR example: change `src/Sample.Api/Program.cs`
+- High-risk PR example: change `src/Sample.Api/appsettings.json`
+
+Expected behavior on a PR into `main`:
+
+1. `Static Analysis` runs
+2. `Risk Label` runs
+3. Changes under `Auth`, `Program.cs`, or `appsettings*` get `risk: high`
+4. That label triggers `Agentic Review`
+
+Important: the agentic workflow is PR-driven. A commit pushed straight to `main` will not create the PR comment flow by itself.
+
 ## Artifacts folder
 
 `artifacts/` is a generated output folder created by local test and coverage runs. In this repo it is used for files such as:

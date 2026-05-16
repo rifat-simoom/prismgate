@@ -4,6 +4,12 @@ on:
   pull_request:
     types:
       - labeled
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: Pull request number to review
+        required: true
+        type: number
 
 permissions:
   contents: read
@@ -12,7 +18,7 @@ permissions:
 
 jobs:
   trigger-agentic-review:
-    if: "${{ github.event.label.name == 'risk: high' }}"
+    if: "${{ github.event_name == 'workflow_dispatch' || github.event.label.name == 'risk: high' }}"
     runs-on: ubuntu-latest
 
     steps:
@@ -20,14 +26,22 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
+            const issueNumber = context.eventName === 'workflow_dispatch'
+              ? Number(core.getInput('pr_number', { required: true }))
+              : context.issue.number;
+
+            const intro = context.eventName === 'workflow_dispatch'
+              ? 'This review was triggered manually from GitHub Actions.'
+              : 'This PR is labeled `risk: high`.';
+
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue_number: context.issue.number,
+              issue_number: issueNumber,
               body: [
                 '@github-copilot review',
                 '',
-                'This PR is labeled `risk: high`.',
+                intro,
                 'Focus on security impact, startup/configuration behavior, migration safety,',
                 'backward compatibility, and correctness around auth or domain boundaries.'
               ].join('\n')
