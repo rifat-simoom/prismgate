@@ -15,4 +15,9 @@ public sealed class DemoTokenService
     {
         return token.StartsWith("demo-token-for-", StringComparison.Ordinal);
     }
+
+    public string DescribeTokenPurpose()
+    {
+        return "Demonstrates a high-risk auth-area change for workflow testing.";
+    }
 }
