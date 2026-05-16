@@ -50,7 +50,7 @@ jobs:
           ref: ${{ steps.pr.outputs.head_ref }}
 
       - name: Fetch base branch
-        run: git fetch origin "${{ steps.pr.outputs.base_ref }}" --depth=1
+        run: git fetch origin "${{ steps.pr.outputs.base_ref }}"
 
       - name: Classify changed files
         id: risk
