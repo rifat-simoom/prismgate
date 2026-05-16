@@ -14,6 +14,7 @@ on:
         type: number
 
 permissions:
+  actions: write
   contents: read
   issues: write
   pull-requests: write
@@ -102,4 +103,22 @@ jobs:
               repo,
               issue_number,
               body: `## Static Risk Classification\n\n**Label:** ${target}\n**Reason:** ${reason}`,
+            });
+
+      - name: Dispatch agentic review
+        if: "${{ steps.risk.outputs.risk == 'risk: high' }}"
+        uses: actions/github-script@v7
+        env:
+          PR_NUMBER: ${{ steps.pr.outputs.pr_number }}
+          BASE_REF: ${{ steps.pr.outputs.base_ref }}
+        with:
+          script: |
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'agentic-review.yml',
+              ref: process.env.BASE_REF,
+              inputs: {
+                pr_number: process.env.PR_NUMBER,
+              },
             });
