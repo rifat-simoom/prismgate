@@ -7,11 +7,12 @@ on:
 
 permissions:
   contents: read
+  issues: write
   pull-requests: write
 
 jobs:
   trigger-agentic-review:
-    if: github.event.label.name == 'risk: high'
+    if: "${{ github.event.label.name == 'risk: high' }}"
     runs-on: ubuntu-latest
 
     steps:
